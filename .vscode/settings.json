@@ -1,5 +1,9 @@
 {
     "files.associations": {
-        "meu_ls.h": "c"
+        "meu_ls.h": "c",
+        "string.h": "c",
+        "types.h": "c",
+        "unistd.h": "c",
+        "errno.h": "c"
     }
 }

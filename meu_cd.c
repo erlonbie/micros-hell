@@ -6,35 +6,21 @@
 #include <pwd.h>
 #include "meu_cd.h"
 
-char *callwd()
+void mudaDiretorio(char *path)
 {
-    return getcwd(NULL, 0);
-}
-void setwd(char *path)
-{
-    struct passwd *pw = getpwuid(getuid());
-    const char *home = pw->pw_dir;
-    int result = -1;
+    struct passwd *nomeDir = getpwuid(getuid());
+    char *home = nomeDir->pw_dir;
+    int valor = -1;
     if (path == NULL)
     {
-        result = chdir(home);
+        valor = chdir(home);
     }
     else
     {
-        result = chdir(path);
+        valor = chdir(path);
     }
-    if (result == -1)
+    if (valor == -1)
     {
-        switch (errno)
-        {
-        case ENOENT:
-            printf("Não foi possível encontrar: %s", path);
-            break;
-        case EACCES:
-            printf("Não há permissão para acessar: %s", path);
-            break;
-        default:
-            break;
-        }
+        printf("Erro\n");
     }
 }

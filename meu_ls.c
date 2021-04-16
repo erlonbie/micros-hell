@@ -5,7 +5,7 @@
 #include <dirent.h>
 #include "meu_ls.h"
 
-void mostrapath(char *path)
+void mostraArquivos(char *path)
 {
 	DIR *diretorio;
 	diretorio = opendir(path);
@@ -16,8 +16,9 @@ void mostrapath(char *path)
 		nomeDiretorio = pathDiretorio->d_name;
 		if (nomeDiretorio[0] != '.')
 		{
-			printf("%s\n", nomeDiretorio);
+			printf("%s  ", nomeDiretorio);
 		}
 		pathDiretorio = readdir(diretorio);
 	}
+	printf("\n");
 }

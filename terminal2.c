@@ -4,6 +4,7 @@
 #include <string.h>
 #include <sys/wait.h>
 #include "meu_ls.h"
+#include "meu_cd.h"
 
 void prompt()
 {
@@ -37,7 +38,7 @@ int main(int argc, char const *argv[])
         prompt();
         char *path = getcwd(NULL, 0);
         char frase[100];
-        scanf("%s", frase);
+        scanf("%[^\n]", frase);
         getchar();
         args = parser(frase);
         for (int j = 0; args[j] != NULL; j++)
@@ -59,7 +60,7 @@ int main(int argc, char const *argv[])
         }
         else if (strcmp(args[0], "ls") == 0)
         {
-            mostrapath(path);
+            mostraArquivos(path);
         }
         else if (strcmp(args[0], "pwd") == 0)
         {
@@ -67,11 +68,7 @@ int main(int argc, char const *argv[])
         }
         else if (strcmp(args[0], "cd") == 0)
         {
-            //execl("/bin/sh", "-c", "cd", (const char *)0);
-            chdir(args[1]);
-            args[0] = strdup("pwd");
-            args[1] = NULL;
-            execvp((args[0]), args);
+            mudaDiretorio(args[1]);
         }
         else
         {

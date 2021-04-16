@@ -5,7 +5,7 @@
 #include <dirent.h>
 #include "ls.h"
 
-void lsdir(char *path)
+void mostraArquivos(char *path)
 {
 
     DIR *dp;

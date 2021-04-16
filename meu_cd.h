@@ -1,7 +1,6 @@
-#ifndef __WD__
-#define __WD__
+#ifndef __TERMINALWD__
+#define __TERMINALWD__
 
-char *callwd();
-void setwd(char *);
+void mudaDiretorio(char *);
 
 #endif

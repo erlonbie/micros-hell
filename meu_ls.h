@@ -1,6 +1,6 @@
-#ifndef __MEULS__
-#define __MEULS__
+#ifndef __TERMINALLS__
+#define __TERMINALLS__
 
-void mostrapath(char *);
+void mostraArquivos(char *);
 
 #endif
