@@ -5,6 +5,7 @@
 #include <sys/wait.h>
 #include "meu_ls.h"
 #include "meu_cd.h"
+#include "meu_exec.h"
 
 void prompt()
 {
@@ -28,19 +29,29 @@ char **parser(char *frase)
     return vetor;
 }
 
-int main(int argc, char const *argv[])
+int main(int argc, char *argv[])
 {
     system("clear");
     int tam;
     char **args;
     while (1)
     {
-        prompt();
+        //prompt();
         char *path = getcwd(NULL, 0);
+        printf("%s >> ", path);
+
         char frase[100];
-        scanf("%[^\n]", frase);
-        getchar();
-        args = parser(frase);
+        if (argc > 1)
+        {
+            args = argv;
+        }
+        else
+        {
+            scanf("%[^\n]", frase);
+            getchar();
+            args = parser(frase);
+        }
+
         for (int j = 0; args[j] != NULL; j++)
         {
             tam = j;
@@ -72,7 +83,7 @@ int main(int argc, char const *argv[])
         }
         else
         {
-            execvp((args[0]), args);
+            executaComando(args, tam);
         }
     }
 
