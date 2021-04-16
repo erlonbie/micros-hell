@@ -58,6 +58,10 @@ int main(int argc, char *argv[])
             //printf("Token %d: %s\n", j, args[j]);
         }
         tam++;
+        if (tam == 1)
+        {
+            args[1] = "";
+        }
         //printf("tamanho: %d\n", tam);
         if (strcmp(frase, "exit") == 0)
         {

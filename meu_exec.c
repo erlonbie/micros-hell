@@ -12,7 +12,7 @@ void executaComando(char **args, int tam)
     int rc = fork();
     if (rc < 0)
     {
-        printf("Erro ao executar comando!\n");
+        printf("Erro!\n");
         return;
     }
     if (rc == 0)
@@ -23,7 +23,7 @@ void executaComando(char **args, int tam)
             int rc2 = fork();
             if (rc2 < 0)
             {
-                printf("Erro ao executar comando!\n");
+                printf("Erro!\n");
                 return;
             }
             else if (rc2 == 0)
@@ -31,24 +31,25 @@ void executaComando(char **args, int tam)
                 char **argsFilho = args;
                 dup2(pipefd[0], STDIN_FILENO);
                 close(pipefd[1]);
+                //printf("PASSEI POR AQUI\n");
 
                 int status2 = execvp(argsFilho[0], argsFilho);
                 printf("\n");
 
                 if (status2 < 0)
                 {
-                    printf("Erro ao executar programa!\n");
+                    printf("Erro!\n");
                     exit(1);
                 }
             }
             else
             {
-                dup2(pipefd[1], STDOUT_FILENO);
+                dup2(pipefd[1], 1);
                 int status = execvp(args[0], args);
                 printf("\n");
                 if (status < 0)
                 {
-                    printf("Erro ao executar programa!\n");
+                    printf("Erro!\n");
                     exit(1);
                 }
                 wait(0);
