@@ -7,6 +7,15 @@
 #include "meu_cd.h"
 #include "meu_exec.h"
 
+/*
+Equipe:
+
+Erlon -21953823
+Isabelly - 21352282
+Miguel Gomes - 21952040
+Solano Oliveira - 21951853
+*/
+
 void prompt()
 {
     printf(">> ");
