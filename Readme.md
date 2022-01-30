@@ -4,12 +4,15 @@ Sistemas Operacionais
 
 Equipe:
 
-Erlon -21953823 |
-Isabelly - 21352282 |
-Miguel Gomes - 21952040 |
-Solano Oliveira - 21951853
+Aldemir Silva
+Erlon Bié
+Glenn Aguiar
+Igor Carvalho
 
+gcc -o proto terminal.c meu_cd.c meu_ls.c meu_exec.c
 
-gcc -o terminal terminal.c meu_cd.c meu_ls.c meu_exec.c
+ou
 
-./terminal
+gcc meu_cd.c meu_exec.c meu_ls.c terminal2.c -o proto
+
+./proto
