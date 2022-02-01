@@ -38,10 +38,10 @@ void cmd_exit () {
     execvp((args[0]), args);
 }
 
-int pos_output (char ** args) {
+int pos_token (char ** args, char token) {
     int pos_operator = 0;
     for (int i = 0; i < tam_input; ++i) {
-        if( strchr(args[i], '>') != NULL) {
+        if( strchr(args[i], token) != NULL) {
             pos_operator = i;
         }
     }
@@ -49,18 +49,17 @@ int pos_output (char ** args) {
     return pos_operator;
 }
 
-
-int pos_input (char ** args) {
-    int pos_operator = 0;
-    for (int i = 0; i < tam_input; ++i) {
-        if( strchr(args[i], '<') != NULL) {
-            pos_operator = i;
-        }
-    }
-
-    return pos_operator;
+void print_strings(char ** strs) {
+    for (int i = 0; strs[i]; i++) printf("%d:'%s' \n", i, strs[i]);
 }
 
+int tam_arq(FILE *arq) {
+    int pos_atual = ftell(arq);
+    fseek(arq, 0, SEEK_END);
+    int tam = ftell(arq);
+    fseek(arq, pos_atual, SEEK_SET);
+    return tam;
+}
 
 void cmd_execute (char ** input) {
     int rc = fork();
@@ -68,16 +67,26 @@ void cmd_execute (char ** input) {
         fprintf(stderr, "fork falhou\n");
         exit(1);
     } else if (rc == 0) {
-        if(pos_output(input) > 0) {
+        int token_saida = pos_token(input, '>');
+        int token_entrada = pos_token(input, '<');
+        if(token_saida > 0) {
             close(STDOUT_FILENO);
-            fopen(input[pos_output(input)+1], "w");
-            input[pos_output(input)] = NULL;
+            fopen(input[token_saida+1], "w");
+            input[token_saida] = NULL;
             execvp(input[0], input);
-        } else if (pos_input(input) > 0) {
-            close(STDIN_FILENO);
-            fopen(input[pos_output(input)+1], "r");
-            input[pos_output(input)] = NULL;
-            execvp(input[0], input);
+        } else if (token_entrada > 0) {
+            FILE *f = fopen(input[token_entrada+1], "r");
+            if (f) {
+                int tam_input = tam_arq(f);
+                char *string_arq = (char*) malloc(tam_input);
+                fread(string_arq, tam_input, 1, f);
+                char **new_args = (char**) malloc(sizeof(char*) * 2);
+                new_args[0] = input[0];
+                new_args[1] = string_arq;
+                execvp(input[0], new_args);
+            } else {
+                printf("Arquivo '%s' não encontrado.", input[token_entrada+1]);
+            }
         }
         else {
             execvp(input[0], input);
@@ -107,9 +116,6 @@ int main(int argc, char *argv[])
         scanf("%[^\n]", input);
         getchar();
         args = parser(input);
-        pos_output(args);
-        pos_input(args);
-
         if (strcmp(input, "exit") == 0)
         {
             cmd_exit(); 

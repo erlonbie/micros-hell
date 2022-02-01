@@ -13,6 +13,6 @@
 
 ou
 
-`gcc meu_cd.c meu_exec.c meu_ls.c terminal2.c -o proto`
+`gcc meu_cd.c meu_exec.c meu_ls.c terminal2.c -o ter2`
 
 ./proto
