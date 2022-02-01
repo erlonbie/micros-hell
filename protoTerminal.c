@@ -56,6 +56,7 @@ int file_size(FILE *f) {
 
 void execute (Args_t *args) {
     int rc = fork();
+    int is_wait = pos_token(args, '&');
     if (rc < 0) {
         fprintf(stderr, "fork falhou\n");
         exit(1);
@@ -96,9 +97,8 @@ void execute (Args_t *args) {
         }
         exit(1); 
 
-    } else {
-        int cmd = wait(NULL);
     }
+    if (is_wait < 0) wait(NULL);
 }
 
 void interpret(char* input) {
