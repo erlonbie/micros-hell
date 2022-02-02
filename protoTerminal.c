@@ -75,7 +75,17 @@ char **cortar_args(char **args, int corte) {
     return novos_args;
 }
 
+void force_execvp(char **args) {
+    if (execvp(args[0], args) == -1) {
+        char aux[strlen(args[0])+2];
+        strcpy(aux, args[0]);
+        strcat(strcpy(args[0], "./"), aux);
 
+        if(execvp(args[0], args) == -1){
+            fprintf(stderr, "Comando não reconhecido\n"); 
+        }
+    }
+}
 
 void execute (Args_t *args) {
     int rc = fork();
@@ -99,7 +109,7 @@ void execute (Args_t *args) {
                 dup2(fd[WRITE_END],STDOUT_FILENO);
                 close(fd[WRITE_END]);
                 char **new_args = cortar_args(args->tokens, token_pipe+1);
-                execvp(new_args[0], new_args);
+                force_execvp(new_args);
             }
             else //filho
             { 
@@ -110,7 +120,7 @@ void execute (Args_t *args) {
                     close(fd[READ_END]);
                     close(fd[WRITE_END]);
                     char **new_args = &(args->tokens[token_pipe+1]);
-                    execvp(new_args[0], new_args);
+                    force_execvp(new_args);
                 } else {
                     wait(NULL);
                     close(fd[READ_END]);
@@ -122,33 +132,21 @@ void execute (Args_t *args) {
             close(STDOUT_FILENO);
             fopen(args->tokens[token_saida+1], "w");
             args->tokens[token_saida] = NULL;
-            execvp(args->tokens[0], args->tokens);
+            force_execvp(args->tokens);
 
         } else if (token_entrada > 0) {
             FILE *f = fopen(args->tokens[token_entrada+1], "r");
             if (f) {
                 int size = file_size(f);
                 char buffer[size];
-
                 fread(buffer, size, 1, f);
-
                 char *new_args[3] = {args->tokens[0], buffer, (char *)NULL};
-                
-                execvp(new_args[0], new_args);
-
+                force_execvp(new_args);
             } else {
                 printf("Arquivo '%s' não encontrado.", args->tokens[token_entrada+1]);
             }
         } else {
-            if (execvp(args->tokens[0], args->tokens) == -1) {
-                char aux[strlen(args->tokens[0])+2];
-                strcpy(aux, args->tokens[0]);
-                strcat(strcpy(args->tokens[0], "./"), aux);
-
-                if(execvp(args->tokens[0], args->tokens) == -1){
-                   fprintf(stderr, "Comando não reconhecido\n"); 
-                }
-            }
+            force_execvp(args->tokens);
         }
         exit(1); 
 
