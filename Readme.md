@@ -21,4 +21,4 @@ gcc protoTerminal.c -o proto
 ./proto
 ```
 
-`Recomendavel reiniciar o terminal apos alguns comandos!``
+`Recomendavel reiniciar o terminal apos alguns comandos!`
