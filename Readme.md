@@ -10,10 +10,15 @@
 - Igor Carvalho
 
 ### Compilando
+
 ```
 gcc protoTerminal.c -o proto
 ```
+
 ### Executando
+
 ```
 ./proto
 ```
+
+`Recomendavel reiniciar o terminal apos alguns comandos!``

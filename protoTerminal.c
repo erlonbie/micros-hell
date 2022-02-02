@@ -1,3 +1,12 @@
+/*
+    Aldemir Silva
+    Erlon Bié
+    Glenn Fonseca
+    Igor Carvalho
+*/
+
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
