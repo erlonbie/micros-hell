@@ -4,8 +4,11 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 
 #define MAX_ARGS 100
+#define READ_END 0
+#define WRITE_END 1
 
 typedef struct Args_t {
     char *tokens[MAX_ARGS];
@@ -54,16 +57,59 @@ int file_size(FILE *f) {
     return tam;
 }
 
+char **cortar_args(char **args, int corte) {
+    char **novos_args = (char **) malloc(sizeof(char*)*corte);
+    for (int i = 0; i < corte; i++) {
+        novos_args[i] = args[i];
+    }
+    novos_args[corte-1] = NULL;
+    return novos_args;
+}
+
+
+
 void execute (Args_t *args) {
     int rc = fork();
     int is_wait = pos_token(args, '&');
     if (rc < 0) {
         fprintf(stderr, "fork falhou\n");
         exit(1);
-    } else if (rc == 0) {
-        int token_saida = pos_token(args, '>'), token_entrada = pos_token(args, '<');
+    } else if (rc == 0) {//no filho
+        int token_saida = pos_token(args, '>'), token_entrada = pos_token(args, '<'), token_pipe = pos_token(args, '|');
 
-        if(token_saida > 0) {
+        if (token_pipe > 0) {
+            pid_t pid;
+            int fd[2];
+
+            pipe(fd);
+            pid = fork();
+
+            if(pid==0)//filho do filho -> ret5
+            {   
+                close(fd[READ_END]);
+                dup2(fd[WRITE_END],STDOUT_FILENO);
+                close(fd[WRITE_END]);
+                char **new_args = cortar_args(args->tokens, token_pipe+1);
+                execvp(new_args[0], new_args);
+            }
+            else //filho
+            { 
+                pid=fork();
+                if(pid==0) //filho2 do filho -> sum5
+                {
+                    dup2(fd[READ_END],STDIN_FILENO);
+                    close(fd[READ_END]);
+                    close(fd[WRITE_END]);
+                    char **new_args = &(args->tokens[token_pipe+1]);
+                    execvp(new_args[0], new_args);
+                } else {
+                    wait(NULL);
+                    close(fd[READ_END]);
+                    close(fd[WRITE_END]);
+                }
+            }
+        }
+        else if (token_saida > 0) {
             close(STDOUT_FILENO);
             fopen(args->tokens[token_saida+1], "w");
             args->tokens[token_saida] = NULL;
@@ -77,7 +123,7 @@ void execute (Args_t *args) {
 
                 fread(buffer, size, 1, f);
 
-                char *new_args[2] = {args->tokens[0], buffer};
+                char *new_args[3] = {args->tokens[0], buffer, (char *)NULL};
                 
                 execvp(new_args[0], new_args);
 
@@ -85,12 +131,12 @@ void execute (Args_t *args) {
                 printf("Arquivo '%s' não encontrado.", args->tokens[token_entrada+1]);
             }
         } else {
-            if (execvp(args->tokens[0], args->tokens) < 0) {
+            if (execvp(args->tokens[0], args->tokens) == -1) {
                 char aux[strlen(args->tokens[0])+2];
                 strcpy(aux, args->tokens[0]);
                 strcat(strcpy(args->tokens[0], "./"), aux);
 
-                if(execvp(args->tokens[0], args->tokens) < 0){
+                if(execvp(args->tokens[0], args->tokens) == -1){
                    fprintf(stderr, "Comando não reconhecido\n"); 
                 }
             }
